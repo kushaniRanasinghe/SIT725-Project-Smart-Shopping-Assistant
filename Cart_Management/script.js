@@ -125,7 +125,10 @@ function checkout() {
     alert("Your cart is empty.");
   } else {
     alert(`Total Amount: $${calculateTotal()}. Proceeding to payment...`);
+
   }
+  window.location.href = 'Payment.html';
+
 }
 
 // Shop now button (redirect or logic)

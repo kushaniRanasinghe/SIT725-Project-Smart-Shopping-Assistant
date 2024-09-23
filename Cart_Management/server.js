@@ -1,6 +1,8 @@
-// server.js
+
+require('dotenv').config()
 const express = require('express');
 const path = require('path');
+const paypal = require('./services/paypal')
 const app = express();
 const PORT = 3000;
 
@@ -11,6 +13,32 @@ app.use(express.static(path.join(__dirname)));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+app.set('view engine', 'ejs')
+
+
+app.post('/pay', async(req, res) => {
+    try {
+        const url = await paypal.createOrder()
+
+        res.redirect(url)
+    } catch (error) {
+        res.send('Error: ' + error)
+    }
+})
+app.get('/complete-order', async (req, res) => {
+    try {
+        await paypal.capturePayment(req.query.token)
+
+        res.send('You goods are purchased successfully')
+    } catch (error) {
+        res.send('Error: ' + error)
+    }
+})
+app.get('/cancel-order', (req, res) => {
+    res.redirect('/')
+})
+
 
 // Start the server
 app.listen(PORT, () => {
