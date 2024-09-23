@@ -14,6 +14,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Serve the signup page
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, 'signup.html'));
+});
+
+// Serve the login page
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname,  'login.html'));
+});
+
 app.get('/addProduct', (req, res) => {
     res.sendFile(path.join(__dirname, 'addProduct.html'));
   });
