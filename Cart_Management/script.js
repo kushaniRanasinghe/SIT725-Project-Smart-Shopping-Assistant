@@ -2,9 +2,9 @@ let cart = [];
 
 // Sample product data
 const products = [
-  { id: 1, name: "Product A", price: 25.99, quantity: 1, image: "t-shirt.webp" },
-  { id: 2, name: "Product B", price: 15.99, quantity: 1, image: "shoe.webp" },
-  { id: 3, name: "Product C", price: 35.49, quantity: 1, image: "men.webp" }
+  { id: 1, name: "Product A", price: 25.99, quantity: 1, image: "images/t-shirt.webp" },
+  { id: 2, name: "Product B", price: 15.99, quantity: 1, image: "images/shoe.webp" },
+  { id: 3, name: "Product C", price: 35.49, quantity: 1, image: "images/men.webp" }
 ];
 
 // Add product to cart
