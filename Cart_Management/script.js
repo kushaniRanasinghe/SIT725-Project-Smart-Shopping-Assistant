@@ -131,6 +131,12 @@ function checkout() {
 
 }
 
+function addtocart2() {
+
+  window.location.href = './index.html';
+
+}
+
 // Shop now button (redirect or logic)
 function shopNow() {
   alert('Redirecting to shop...');

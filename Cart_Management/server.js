@@ -14,6 +14,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/addProduct', (req, res) => {
+    res.sendFile(path.join(__dirname, 'addProduct.html'));
+  });
+
+app.get('/shop', (req, res) => {
+    res.sendFile(path.join(__dirname, 'shop.html'));
+});
+
 app.set('view engine', 'ejs')
 
 
