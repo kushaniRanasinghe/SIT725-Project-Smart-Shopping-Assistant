@@ -91,8 +91,13 @@ function updateCartDisplay() {
   cartItemsDiv.innerHTML = ''; 
 
   if (cart.length === 0) {
-    cartItemsDiv.innerHTML = `<p>Your cart is empty.</p>`;
-  } else {
+    cartItemsDiv.innerHTML = `
+      <div class="empty-cart">
+        <p>Your cart is empty. Add some products!</p>
+        <button onclick="shopNow()">Shop Now</button>
+      </div>
+    `;
+  }else {
     cart.forEach(item => {
       cartItemsDiv.innerHTML += `
         <div class="cart-item">
@@ -119,9 +124,17 @@ function checkout() {
   if (cart.length === 0) {
     alert("Your cart is empty.");
   } else {
-    alert(`Total Amount: $${document.getElementById('cartTotal').textContent}. Proceeding to payment...`);
+    alert(`Total Amount: $${calculateTotal()}. Proceeding to payment...`);
   }
 }
+
+// Shop now button (redirect or logic)
+function shopNow() {
+  alert('Redirecting to shop...');
+  window.location.href = 'products.html';
+}
+
+
 
 // Initialize the cart with sample products
 products.forEach(product => addToCart(product));
