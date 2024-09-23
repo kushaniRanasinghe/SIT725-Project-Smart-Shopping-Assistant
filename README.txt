@@ -10,8 +10,11 @@ git add .
 # 4. Commit the files
 git commit -m "Initial commit"
 
-# 5. Add the remote repository
+# 5. Branch
+git branch -M main
+
+# 6. Add the remote repository
 git remote add origin https://github.com/your-username/repo-name.git
 
-# 6. Push the files to the remote repository
+# 7. Push the files to the remote repository
 git push -u origin master
