@@ -124,11 +124,13 @@ function checkout() {
   if (cart.length === 0) {
     alert("Your cart is empty.");
   } else {
-    alert(`Total Amount: $${calculateTotal()}. Proceeding to payment...`);
-
+    const baseTotal = calculateTotal();
+    const { discount, deliveryFee } = calculateDiscountAndDelivery(baseTotal);
+    const finalTotal = (baseTotal - discount + deliveryFee).toFixed(2);
+    
+    alert(`Final Total Amount: $${finalTotal}. Proceeding to payment...`);
+    window.location.href = 'Payment.html';
   }
-  window.location.href = 'Payment.html';
-
 }
 
 function addtocart2() {
