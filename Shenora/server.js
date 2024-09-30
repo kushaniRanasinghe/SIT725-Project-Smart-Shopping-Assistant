@@ -1,4 +1,8 @@
+require('dotenv').config()
+
 const express = require('express')
+const paypal = require('./services/paypal')
+
 const path = require('path')
 const { engine } = require('express-handlebars')
 const bodyParser = require('body-parser')
@@ -23,7 +27,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.engine('.hbs', engine({
   extname: "hbs",//index.hbs
   layoutsDir: path.join(__dirname, 'views/layouts'),
-  defaultLayout: 'login.html'
+  defaultLayout: 'mainLayout.hbs'
 }))
 app.set('view engine', '.hbs')
 
@@ -37,6 +41,32 @@ app.get('/signup', (req, res) => {
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/layouts', 'login.html'));
 });
+app.get('/Payment', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html'));
+});
+
+
+app.post('/pay', async(req, res) => {
+  try {
+      const url = await paypal.createOrder()
+
+      res.redirect(url)
+  } catch (error) {
+      res.send('Error: ' + error)
+  }
+})
+app.get('/complete-order', async (req, res) => {
+  try {
+      await paypal.capturePayment(req.query.token)
+
+      res.send('You goods are purchased successfully')
+  } catch (error) {
+      res.send('Error: ' + error)
+  }
+})
+app.get('/cancel-order', (req, res) => {
+  res.redirect('/')
+})
 
 // app.use('/new', productoutes)
 
