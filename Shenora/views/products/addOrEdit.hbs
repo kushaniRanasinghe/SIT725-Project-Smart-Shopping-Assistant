@@ -1,0 +1,82 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="card mt-5">
+        <div class="card-body">
+          <h1 class="dispaly-6 fw-bold text-center my-4">
+            Add Products
+          </h1>
+          <div class="row">
+            <div class="col-md-10 offset-md-1">
+
+
+              <form action="/products/addOrEdit" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_id" value="{{product._id}}">
+                <div class="form-floating mb-3">
+                  <input name="title" class="form-control" placeholder="Product Title" required
+                    value="{{product.title}}">
+                  <label>Product Title</label>
+                </div>
+                <div class="form-floating mb-3">
+                  {{!-- <input name="catogry" class="form-control" placeholder="Product Catogry" required
+                    value="{{product.catogry}}">
+                  <label>Product Catogry</label> --}}
+
+                  {{!-- <label for="catogry">Choose a catogry:</label> --}}
+                  <select class="form-control" name="catogry" id="catogry" placeholder="Category" required
+                    value="{{product.catogry}}">
+                    <option value="dress">Women</option>
+                    <option value="shirt">Men</option>
+                    <option value="shorts">Shoes</option>
+                    <option value="shorts">Jewelery and Accessories</option>
+                    <option value="shorts">Kids</option>
+                  </select>
+                </div>
+                
+                <div class="form-floating mb-3">
+                  <input name="color" class="form-control" placeholder="Color" required value="{{product.color}}">
+                  <label>Product Color</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                  <input name="material" class="form-control" placeholder="Material" required value="{{product.material}}">
+                  <label>Product Material</label>
+                </div> 
+
+                <div class="row mb-3">
+                  <div class="col">
+                    <div class="form-floating mb-3">
+                      <input type="number" name="qty" class="form-control" placeholder="Avaliable Qty" required
+                        value="{{product.qty}}">
+                      <label>Avaliable Qty</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-floating mb-3">
+                      <input type="number" name="price" class="form-control" placeholder="Price" required min="1"
+                        value="{{product.price}}">
+                      <label>Price</label>
+                    </div>
+                  </div>
+
+                  <div>
+                  </div>
+                  <label for="image">Upload Image</label>
+                  <input type="file" id="image" name="image" value="{{product.image}}" required />
+                </div>
+            </div>
+            <div class=" float-end">
+              <a href="/products" class="btn btn-outline-secondary">☰ View All</a>
+              <button type="submit" class="btn btn-success">
+                Submit
+              </button>
+            </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
