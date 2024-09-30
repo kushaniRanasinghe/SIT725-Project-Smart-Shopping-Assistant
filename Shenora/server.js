@@ -41,6 +41,10 @@ app.get('/signup', (req, res) => {
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/layouts', 'login.html'));
 });
+// Define a route to serve the index.html
+app.get('/Cart', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/layouts/Cart.html'));
+});
 app.get('/Payment', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html'));
 });
@@ -94,3 +98,7 @@ connectDb()
       console.log('server ignition failed:\n', err))
   })
   .catch(err => console.log('error in connecting db\n:', err))
+
+
+
+  
