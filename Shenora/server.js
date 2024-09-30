@@ -23,9 +23,20 @@ app.set('views', path.join(__dirname, 'views'))
 app.engine('.hbs', engine({
   extname: "hbs",//index.hbs
   layoutsDir: path.join(__dirname, 'views/layouts'),
-  defaultLayout: 'mainLayout.hbs'
+  defaultLayout: 'login.html'
 }))
 app.set('view engine', '.hbs')
+
+
+// Serve the signup page
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/layouts', 'signup.html'));
+});
+
+// Serve the login page
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/layouts', 'login.html'));
+});
 
 // app.use('/new', productoutes)
 

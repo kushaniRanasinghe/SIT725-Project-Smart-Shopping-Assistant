@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Shenora</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- Font Awesome for icons -->
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            
+        </div>
+        <div class="navbar-links">
+            <a href="#">Women</a>
+            <a href="#">Men</a>
+            <a href="#">Kids</a>
+            <a href="#">Gifts & Personalization</a>
+            <a href="#">Sale</a>
+        </div>
+        <div class="navbar-search">
+            <input type="text" placeholder="What are you looking for?" />
+            <button>Search</button>
+        </div>
+        <div class="navbar-icons">
+            <a href="#"><i class="fa fa-user"></i></a>
+            <a href="#"><i class="fa fa-heart"></i></a>
+            <a href="#"><i class="fa fa-shopping-cart"></i></a>
+        </div>
+    </nav>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="benefits-text">
+            <h2>Benefits of creating your account</h2>
+            <ul>
+                <li><i class="fa fa-truck"></i> Order tracking details</li>
+                <li><i class="fa fa-gift"></i> Perks members can redeem rewards & earn bonus points</li>
+                <li><i class="fa fa-shopping-bag"></i> A speedy checkout</li>
+                <li><i class="fa fa-heart"></i> Curate wishlist</li>
+            </ul>
+        </div>
+        <div class="benefits-image">
+            <img src="/images/shenora.png" alt="Shenora Logo" width="300px" />
+        </div>
+    </section>
+
+    <div class="container">
+        <header>
+            <h1>Register for your account</h1>
+        </header>
+
+        <section class="register-section">
+            <form action="/register" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input type="text" id="first-name" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" id="last-name" name="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <small>Password must be 8+ characters and contain a number, special character, and both uppercase and lowercase letters.</small>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+
+            <div class="login-section">
+                <p>Already have an account? <a href="/login">Log In</a></p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

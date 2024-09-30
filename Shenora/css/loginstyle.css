@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #e0f2fe; /* Light blue background */
+}
+
+.login-container {
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    background-color: white;
+    padding: 30px; /* Increased padding for better spacing */
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1); /* More shadow for better visual appeal */
+    border-radius: 10px; /* Increased border radius for rounded corners */
+}
+
+.logo h2 {
+    color: #3b5998;
+    margin-bottom: 20px;
+    font-size: 24px; /* Larger font size for better prominence */
+}
+
+.login-box h3 {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.login-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.login-box input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.btn-black {
+    background-color: #000;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-black:hover {
+    background-color: #333;
+}
+
+.login-box p {
+    margin: 15px 0;
+    color: #666;
+}
+
+.btn-google {
+    background-color: #db4437;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-google:hover {
+    background-color: #c23321;
+}
+
+.btn-facebook {
+    background-color: #4267B2;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-facebook:hover {
+    background-color: #365899;
+}
+
+.terms {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #666;
+}
+
+.terms a {
+    color: #0073e6;
+    text-decoration: none;
+}
+
+.terms a:hover {
+    text-decoration: underline;
+}
