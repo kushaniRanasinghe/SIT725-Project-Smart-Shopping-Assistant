@@ -1,19 +1,23 @@
+// Load environment variables from the .env file
 require('dotenv').config()
 
-const express = require('express')
-const paypal = require('./services/paypal')
+// Import necessary modules
+const express = require('express'); // Web framework for Node.js
+const paypal = require('./services/paypal'); // PayPal integration service
 
-const path = require('path')
+const path = require('path'); // Node.js module for handling file paths
 const mongoose = require('mongoose');
-const { engine } = require('express-handlebars')
-const bodyParser = require('body-parser')
-
+const { engine } = require('express-handlebars'); // Handlebars view engine for rendering HTML
+const bodyParser = require('body-parser'); // Middleware for parsing incoming request bodies
 const PORT = 3000;
 
 //const userRoutes = require('./routes/user');
 
 //const userRoutes = require('./routes/user');
 
+// Import custom routes and controllers
+const cartRoutes = require('./routes/cartRoutes'); // Routes for managing the cart
+const cartController = require('./controllers/cart.controller'); // Controller handling cart operations
 
 //local imports
 const connectDb = require('./db')
@@ -22,66 +26,82 @@ const productoutes = require('./controllers/product.controller')
 // Import the user controller
 const userController = require('./controllers/user.controller');
 
-const app = express()
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+const app = express(); // Initialize the express app
+// Middleware for parsing URL-encoded and JSON request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
+// Set up static file serving from the root directory and "uploads" folder
 app.use(express.static(path.join(__dirname)));
-app.use(express.static("uploads"))
-//routing
+app.use(express.static("uploads"));
+
+// Routing for product-related routes
 app.use('/products', productoutes)
 app.use('/user', userController)
 
-//configure view engine
-app.set('views', path.join(__dirname, 'views'))
+// Configure the view engine (Handlebars) for rendering HTML templates
+app.set('views', path.join(__dirname, 'views')); // Set views directory
 app.engine('.hbs', engine({
-  extname: "hbs",//index.hbs
-  layoutsDir: path.join(__dirname, 'views/layouts'),
-  defaultLayout: 'mainLayout.hbs'
-  
-}))
-app.set('view engine', '.hbs')
+  extname: "hbs", // Set the file extension for Handlebars templates
+  layoutsDir: path.join(__dirname, 'views/layouts'), // Set the layouts directory
+  defaultLayout: 'mainLayout.hbs', // Set the default layout file
+  helpers: {
+    // Helper function for multiplying price by quantity (for displaying totals)
+    multiply: (price, quantity) => price * quantity
+  }
+}));
+app.set('view engine', '.hbs'); // Set the view engine to Handlebars with the .hbs extension
 
+// New line added for cart-related routes
+app.use('/cart', cartRoutes); // Use cart routes for all '/cart' endpoints
 
-// Serve the signup page
+// Route for serving the signup page
 app.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/layouts', 'signup.html'));
 });
 
-// Serve the login page
+// Route for serving the login page
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/layouts', 'login.html'));
 });
-// Define a route to serve the index.html
+
+// Route for serving the Cart page (HTML file)
 app.get('/Cart', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/layouts/Cart.html'));
+  res.sendFile(path.join(__dirname, 'views', 'layouts', 'Cart.html')); // Serve the Cart.html file
 });
+
+// Route for serving the Payment page (HTML file)
 app.get('/Payment', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html'));
+  res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html')); // Serve the Payment.html file
 });
 
 
-app.post('/pay', async(req, res) => {
+// Route for initiating a payment via PayPal
+app.post('/pay', async (req, res) => {
   try {
-      const url = await paypal.createOrder()
+    const url = await paypal.createOrder(); // Create PayPal order and get the payment URL
 
-      res.redirect(url)
+    res.redirect(url); // Redirect the user to PayPal for payment
   } catch (error) {
-      res.send('Error: ' + error)
+    res.send('Error: ' + error); // Handle errors
   }
-})
+});
+
+// Route for completing the PayPal payment
 app.get('/complete-order', async (req, res) => {
   try {
-      await paypal.capturePayment(req.query.token)
+    await paypal.capturePayment(req.query.token); // Capture the payment using the PayPal token
 
-      res.send('You goods are purchased successfully')
+    res.send('Your goods are purchased successfully'); // Display success message
   } catch (error) {
-      res.send('Error: ' + error)
+    res.send('Error: ' + error); // Handle errors
   }
-})
+});
+
+// Route for handling canceled PayPal orders
 app.get('/cancel-order', (req, res) => {
-  res.redirect('/')
-})
+  res.redirect('/'); // Redirect to the homepage when an order is canceled
+});
 
 // app.use('/new', productoutes)
 
@@ -113,16 +133,16 @@ app.get('/cancel-order', (req, res) => {
 // });
 
 
-
+// Connect to the database and start the server
 connectDb()
   .then(data => {
-    console.log('db connection succeeded.');
+    console.log('db connection succeeded.');// Log success message when the database connection is successful
     app.listen(3000, () => {
-      console.log('server started at 3000.');
+      console.log('server started at 3000.');// Start the server and log the port
     }).on('error', err =>
-      console.log('server ignition failed:\n', err))
+      console.log('server ignition failed:\n', err))// Handle server startup errors
   })
-  .catch(err => console.log('error in connecting db\n:', err))
+  .catch(err => console.log('error in connecting db\n:', err))// Handle database connection errors
 
 
   // MongoDB connection

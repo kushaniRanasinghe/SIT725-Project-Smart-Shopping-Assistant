@@ -238,9 +238,6 @@
     </div>
     <!-- Featured End -->
 
-
-
-
     <!-- Offer Start -->
     <div class="container-fluid offer pt-5">
         <div class="row px-xl-5">
@@ -292,7 +289,12 @@
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="#" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <!-- <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a> -->
+
+                        <!-- Add to Cart Start -->
+                        <a href="javascript:void(0);" class="btn btn-sm text-dark p-0" onclick="addToCart('{{this._id}}')"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <!-- Add to Cart End -->
+
                     </div>
                 </div>
             </div>
@@ -301,7 +303,41 @@
         </div>
     </div>
     <!-- Products End -->
-
+    
+    <!-- Start Add to Cart function -->
+    <script>
+        // Function to handle adding a product to the cart
+        function addToCart(productId) {
+            
+            // Use the Fetch API to send a POST request to the /cart/add endpoint
+            fetch('/cart/add', {
+                method: 'POST', // HTTP method
+                headers: {
+                    'Content-Type': 'application/json' // Setting the content type to JSON
+                },
+                body: JSON.stringify({ productId: productId }) // Passing the productId in the request body as JSON
+            })
+            .then(response => response.json()) // Parse the response as JSON
+            .then(data => {
+                // Check if the request was successful
+                if (data.success) {
+                    // Alert the user that the product was added successfully
+                    alert("Product added to cart successfully!");
+                    
+                    // Redirect the user to the Cart page after adding the product
+                    window.location.href = '/Cart';
+                } else {
+                    // Alert the user if adding the product failed
+                    alert("Failed to add product to cart.");
+                }
+            })
+            .catch(error => {
+                // Log any errors that occur during the fetch request
+                console.error('Error:', error);
+            });
+        }
+    </script>
+    <!-- End Add to Cart function -->
 
     <!-- Subscribe Start -->
     <div class="container-fluid bg-secondary my-5">
