@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const Product = require('../models/product.model')
+const User = require('../models/user.model')
 const multer = require('multer')
 
 var storage = multer.diskStorage({
@@ -49,6 +50,10 @@ router.get('/addOrEdit/:id', (req, res) => {
 
 })
 
+router.get('/signup', (req, res) => {
+  res.render('products/signup')
+})
+
 router.post('/addOrEdit',upload, (req, res) => {
   const product = {
     title: req.body.title,
@@ -76,4 +81,31 @@ router.post('/delete/:id', (req, res) => {
     .catch(err => console.log('error during deletion:\n', err))
 })
 
+router.post('/signupfunc',upload, (req, res) => {
+  const user = {
+    email: req.body.email,
+    firstname: req.body.firstname,
+    lastname:req.body.lastname,
+    password:req.body.password,
+    
+  }
+  const { _id } = req.body
+  if (_id == '')
+    new User({ ...user }).save()
+      .then(data => res.redirect('/products/signup'))
+      .catch(err => console.log('error during insertion:\n', err))
+  else
+    Product.findByIdAndUpdate(_id, user)
+      .then(data => res.redirect('/signup'))
+      .catch(err => console.log('error during update operation:\n', err))
+})
+
+router.post('/delete/:id', (req, res) => {
+  Product.findByIdAndDelete(req.params.id)
+    .then(data => res.redirect('/products'))
+    .catch(err => console.log('error during deletion:\n', err))
+})
+
 module.exports = router
+
+

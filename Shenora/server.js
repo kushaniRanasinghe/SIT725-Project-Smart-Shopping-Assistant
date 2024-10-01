@@ -10,7 +10,9 @@ const bodyParser = require('body-parser')
 
 const PORT = 3000;
 
-const userRoutes = require('./routes/user');
+//const userRoutes = require('./routes/user');
+
+//const userRoutes = require('./routes/user');
 
 
 //local imports
@@ -28,6 +30,7 @@ app.use(express.static(path.join(__dirname)));
 app.use(express.static("uploads"))
 //routing
 app.use('/products', productoutes)
+app.use('/user', userController)
 
 //configure view engine
 app.set('views', path.join(__dirname, 'views'))
@@ -35,7 +38,7 @@ app.engine('.hbs', engine({
   extname: "hbs",//index.hbs
   layoutsDir: path.join(__dirname, 'views/layouts'),
   defaultLayout: 'mainLayout.hbs'
-  defaultLayout: 'mainLayout.hbs'
+  
 }))
 app.set('view engine', '.hbs')
 
