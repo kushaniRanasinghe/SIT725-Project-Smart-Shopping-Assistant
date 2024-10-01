@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shenora - Shopping Cart</title>
+  <link rel="stylesheet" href="css/Cartstyle.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="header-left">
+        <img src="../../images/logo.jpg" alt="Shenora Logo" class="logo">
+        <h1>Shenora - Smart Shopping Assistant</h1>
+      </div>
+      <div class="header-right">
+        <div class="login-register">
+          <a href="loginPage.html" class="header-button">Login</a>
+          <a href="register.html" class="header-button">Register</a>
+        </div>
+        <div class="search-bar-container">
+          <form action="/products" method="GET">
+            <input type="text" name="query" placeholder="Search..." class="search-bar">
+            <button type="submit" class="search-button">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <nav class="nav-bar">
+        <ul>
+            <li><a href="products.html">New In</a></li>
+            <li><a href="products.html">Women Clothing</a></li>
+            <li><a href="products.html">Men Clothing</a></li>
+            <li><a href="products.html">Shoes</a></li>
+            <li><a href="products.html">Jewelry and Accessories</a></li>
+        </ul>
+    </nav>
+</header>
+
+   <!-- Shopping Cart Section -->
+  <div class="container">
+    <h2>Shopping Cart</h2>
+    <div id="cartItems"></div>
+    <div class="cart-summary">
+      <p>Sub Total: <span id="baseTotal">0.00</span></p>
+      
+      <p>Flat Discount: <span>(<span style="color: orange;" id="discountPercentage">0</span><span style="color: orange;">%</span>)<span id="discount">0.00</span></span></p>
+      <p>Delivery Fee: <span id="deliveryFee">0.00</span></p>
+      <p>Total: <span id="cartTotal">0.00</span></p>
+    </div>       
+    <div class="cart-actions">
+      <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+  </div>
+  
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+        <div class="footer-left">
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <p>Shenora Online Shopping Assistant</p>
+                <p>123 Main Street, Melbourne, Australia</p>
+                <p>Email: info@shenora.com</p>
+                <p>Phone: 011 12345678</p>
+            </div>
+        </div>
+        <div class="footer-center">
+            <h4>Info</h4>
+            <ul>
+                <li><a href="#">Terms and Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-right">
+            <h4>Newsletter</h4>
+            <p>Enter your email address to receive the latest updates and offers.</p>
+            <div class="newsletter-signup">
+                <input type="email" placeholder="name@domain.com">
+                <button class="subscribe-button">Subscribe</button>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 Shenora. All rights reserved.</p>
+    </div>
+</footer>
+
+  <script src="../../script.js"></script>
+</body>
+</html>

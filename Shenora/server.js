@@ -1,4 +1,8 @@
+require('dotenv').config()
+
 const express = require('express')
+const paypal = require('./services/paypal')
+
 const path = require('path')
 const mongoose = require('mongoose');
 const { engine } = require('express-handlebars')
@@ -31,6 +35,7 @@ app.engine('.hbs', engine({
   extname: "hbs",//index.hbs
   layoutsDir: path.join(__dirname, 'views/layouts'),
   defaultLayout: 'mainLayout.hbs'
+  defaultLayout: 'mainLayout.hbs'
 }))
 app.set('view engine', '.hbs')
 
@@ -44,10 +49,36 @@ app.get('/signup', (req, res) => {
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/layouts', 'login.html'));
 });
+// Define a route to serve the index.html
+app.get('/Cart', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/layouts/Cart.html'));
+});
+app.get('/Payment', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html'));
+});
 
-// Use the controller to handle the signup form submission
-//app.post('/signup', userController.registerUser);
 
+app.post('/pay', async(req, res) => {
+  try {
+      const url = await paypal.createOrder()
+
+      res.redirect(url)
+  } catch (error) {
+      res.send('Error: ' + error)
+  }
+})
+app.get('/complete-order', async (req, res) => {
+  try {
+      await paypal.capturePayment(req.query.token)
+
+      res.send('You goods are purchased successfully')
+  } catch (error) {
+      res.send('Error: ' + error)
+  }
+})
+app.get('/cancel-order', (req, res) => {
+  res.redirect('/')
+})
 
 // app.use('/new', productoutes)
 
