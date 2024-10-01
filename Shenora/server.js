@@ -1,13 +1,20 @@
 const express = require('express')
 const path = require('path')
+const mongoose = require('mongoose');
 const { engine } = require('express-handlebars')
 const bodyParser = require('body-parser')
 
+const PORT = 3000;
+
+const userRoutes = require('./routes/user');
 
 
 //local imports
 const connectDb = require('./db')
 const productoutes = require('./controllers/product.controller')
+
+// Import the user controller
+const userController = require('./controllers/user.controller');
 
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -23,7 +30,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.engine('.hbs', engine({
   extname: "hbs",//index.hbs
   layoutsDir: path.join(__dirname, 'views/layouts'),
-  defaultLayout: 'login.html'
+  defaultLayout: 'mainLayout.hbs'
 }))
 app.set('view engine', '.hbs')
 
@@ -37,6 +44,10 @@ app.get('/signup', (req, res) => {
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/layouts', 'login.html'));
 });
+
+// Use the controller to handle the signup form submission
+//app.post('/signup', userController.registerUser);
+
 
 // app.use('/new', productoutes)
 
@@ -53,6 +64,20 @@ app.get('/login', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'views/layouts/shop.hbs'));
 // });
 
+// // Route to handle login form submission
+// app.post('/login', (req, res) => {
+//   const { username, password } = req.body;
+
+//   // Check if the username and password are correct
+//   if (username === 'admin' && password === 'admin1') {
+//       // Redirect to home page if login is successful
+//       res.redirect('/shop.hbs'); // Assuming '/home' is the route for the home page of your project
+//   } else {
+//       // If the login is invalid, send an error message or redirect back to login
+//       res.send('Invalid login credentials. Please try again.');
+//   }
+// });
+
 
 
 connectDb()
@@ -64,3 +89,12 @@ connectDb()
       console.log('server ignition failed:\n', err))
   })
   .catch(err => console.log('error in connecting db\n:', err))
+
+
+  // MongoDB connection
+mongoose.connect('mongodb+srv://s220194805:nC0IFkpgBCS1fp0q@cluster0.k3wz2.mongodb.net/', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('MongoDB connected successfully'))
+.catch((err) => console.log('MongoDB connection error:', err));
