@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-
+const _ = require('lodash')
 const Product = require('../models/product.model')
 const User = require('../models/user.model')
 const multer = require('multer')
@@ -19,12 +19,22 @@ var upload = multer({
 }).single("image");
 
 router.get('/', (req, res) => {
-  Product.find().lean()
-    .then(data => {
-      res.render("products/index", { products: data })
-    })
-    .catch(err =>
-      console.log('error during fetching operation:\n', err))
+  User.findById(req.cookies.id).lean().then(d=>{
+    if(d.user_type=='admin'){
+      Product.find().lean()
+      .then(data => {
+        res.render("products/index", { products: data })
+      })
+      .catch(err =>
+        console.log('error during fetching operation:\n', err))
+    }else{
+      res.redirect(`/products/shop`)
+    }
+  })
+  .catch(err=>{
+    res.redirect(`/products/shop?valid=false`)
+  })
+  
 })
 
 
@@ -33,12 +43,28 @@ router.get('/addOrEdit', (req, res) => {
 })
 
 router.get('/shop', (req, res) => {
-  Product.find().lean()
+  if(_.isEmpty(req.query)){
+    Product.find().lean()
     .then(data => {
       res.render("products/shop", { products: data })
     })
     .catch(err =>
       console.log('error during fetching operation:\n', err))
+  }else{
+    data = {}
+    if(_.get(req.query,'keysearch')){
+      data['title']=_.get(req.query, 'keysearch')
+    }
+    if(_.get(req.query,'type')){
+      data['catogry']=_.get(req.query, 'type')
+    }
+    Product.find(data).lean()
+    .then(data => {
+      res.render("products/shop", { products: data })
+    })
+    .catch(err =>
+      console.log('error during fetching operation:\n', err))
+  }
 })
 
 
@@ -87,7 +113,7 @@ router.post('/signupfunc',upload, (req, res) => {
     firstname: req.body.firstname,
     lastname:req.body.lastname,
     password:req.body.password,
-    
+    user_type: 'user'
   }
   const { _id } = req.body
   if (_id == '')

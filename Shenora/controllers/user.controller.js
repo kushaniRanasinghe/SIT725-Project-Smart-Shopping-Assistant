@@ -1,70 +1,10 @@
-// const express = require('express')
-// const router = express.Router()
-
-
-// const multer = require('multer')
-// // controllers/userController.js
-// const User = require('../models/user.model');
-
-// // Handle user signup
-// exports.registerUser = (req, res) => {
-//     const { email, firstName, lastName, password } = req.body;
-
-//     const newUser = new User({
-//         email,
-//         firstName,
-//         lastName,
-//         password
-//     });
-
-//     newUser.save((err) => {
-//         if (err) {
-//             console.log('Error saving user:', err);
-//             res.send('Error registering user.');
-//         } else {
-//             res.send('User successfully registered!');
-//         }
-//     });
-// };
-
-
-
-
-// const User = require('../models/user.model'); // Import the user model
-
-// // Handle user registration
-// exports.registerUser = (req, res) => {
-//   const { email, firstName, lastName, password } = req.body;
-
-//   // Create a new user object
-//   const newUser = new User({
-//     email,
-//     firstName,
-//     lastName,
-//     password
-//   });
-
-//   // Save the user to the database
-//   newUser.save((err) => {
-//     if (err) {
-//       console.log('Error saving user:', err);
-//       res.status(500).send('Error registering user.');
-//     } else {
-//       res.status(200).send('User successfully registered!');
-//     }
-//   });
-// };
-
-// // Handle displaying the registration form (if you want to have a separate view for the form)
-// exports.showRegisterForm = (req, res) => {
-//   res.render('signup'); // Assuming you have a signup.html or signup.ejs in your views
-// };
-
 const express = require('express')
 const router = express.Router()
-
+const path = require('path');
 const user = require('../models/user.model')
 const multer = require('multer')
+const userModel = require('../models/user.model');
+const { isEmpty } = require('lodash');
 
 var storage = multer.diskStorage({
   destination: function(req, title,cb){
@@ -75,34 +15,6 @@ var storage = multer.diskStorage({
   }
 })
 
-// var upload = multer({
-//   storage:storage,
-// }).single("image");
-
-// router.get('/', (req, res) => {
-//   Product.find().lean()
-//     .then(data => {
-//       res.render("products/index", { products: data })
-//     })
-//     .catch(err =>
-//       console.log('error during fetching operation:\n', err))
-// })
-
-
-router.get('/signup', (req, res) => {
-  res.render('views/layout/signup')
-})
-
-// router.get('/signup', (req, res) => {
-//   Product.find().lean()
-//     .then(data => {
-//       res.render("products/shop", { products: data })
-//     })
-//     .catch(err =>
-//       console.log('error during fetching operation:\n', err))
-// })
-    
-
 router.get('/views/layouts/signup/:id', (req, res) => {
   users.findById(req.params.id).lean()
     .then(data => res.render('views/layouts/signup', { user: data }))
@@ -111,23 +23,96 @@ router.get('/views/layouts/signup/:id', (req, res) => {
 
 })
 
-router.post('/views/layouts/signup',(req, res) => {
-  const users = {
+router.post('/login',(req, res) => {
+  userModel.findOne({
+    email: req.body.username,
+    password: req.body.password
+  }).lean().then(d=>{
+    if(!d){
+        res.redirect('/login?valid=false')
+    }else if(d.user_type=='admin'){
+        res.cookie('id', d._id, { expires: new Date(Date.now() + 900000), httpOnly: true });
+        res.redirect(`/products?valid=true&id=${d._id}`)
+    }else{
+        res.cookie('id', d._id, { expires: new Date(Date.now() + 900000), httpOnly: true });
+        res.redirect(`/products/shop?valid=true&id=${d._id}`)
+    }
+  })
+  .catch(e=>{
+    res.redirect('/login/?valid=false')
+  })
+})
+
+router.get('/userinfo',(req, res) => {
+  user_id = req.cookies.id
+  if(!user_id){
+    res.redirect('/login?valid=false')
+  }
+  userModel.findById(user_id).lean()
+  .then(d=>{
+    res.render('products/updateuser', { info: d })
+  })
+  .catch(e=>{
+    res.redirect('/login?valid=false')
+  })
+  
+})
+
+router.post('/updateinfo',(req, res) => {
+  user_id = req.cookies.id
+  if(!user_id){
+    res.redirect('/login?valid=false')
+  }
+  userModel.findByIdAndUpdate(user_id, req.body)
+  .then(d=>{
+    res.redirect('/user/userinfo')
+  })
+  .catch(e=>{
+    console.error(e)
+  })
+})
+
+router.post('/deleteinfo',(req, res) => {
+  user_id = req.cookies.id
+  if(!user_id){
+    res.redirect('/login')
+  }
+  userModel.findById(user_id).lean()
+  .then(d=>{
+    if(d.user_type != 'admin'){
+      userModel.findByIdAndDelete(user_id)
+      .then(data =>{
+        res.redirect('/login')
+      })
+      .catch(err=>{
+        res.redirect('/login')
+      })
+    }
+    res.redirect('/login')
+  })
+  .catch(e=>{
+    res.redirect('/login')
+  })
+})
+
+router.post('/signup',(req, res) => {
+  const user = {
     email: req.body.email,
     firstname: req.body.firstname,
     lastname:req.body.lastname,
     password:req.body.password,
-    
+    user_type:'user'
   }
   const { _id } = req.body
-  if (_id == '')
-    new users({ ...user }).save()
-      .then(data => res.redirect('/signup'))
+
+  userModel.findOne({email: user.email}).lean()
+  .then(d=>{
+    if(isEmpty(d)){
+      userModel.create(user)
+      .then(data => res.redirect('/login'))
       .catch(err => console.log('error during insertion:\n', err))
-  else
-    users.findByIdAndUpdate(_id, user)
-      .then(data => res.redirect('/views/layouts/signup'))
-      .catch(err => console.log('error during update operation:\n', err))
+    }
+  })
 })
 
 router.post('/delete/:id', (req, res) => {

@@ -1,19 +1,28 @@
 // Load environment variables from the .env file
 require('dotenv').config()
+const url = require('url');
+const { v4: uuidv4 } = require('uuid');
 
 // Import necessary modules
 const express = require('express'); // Web framework for Node.js
-const paypal = require('./services/paypal'); // PayPal integration service
+//const paypal = require('./services/paypal'); // PayPal integration service
+const paypal = require('paypal-rest-sdk');
 
+paypal.configure({
+  'mode': 'sandbox',
+  'client_id': process.env.PAYPAL_CLIENT_ID,
+  'client_secret': process.env.PAYPAL_SECRET
+});
+
+const Cart = require('./models/cart.model');
 const path = require('path'); // Node.js module for handling file paths
 const mongoose = require('mongoose');
 const { engine } = require('express-handlebars'); // Handlebars view engine for rendering HTML
 const bodyParser = require('body-parser'); // Middleware for parsing incoming request bodies
 const PORT = 3000;
 
-//const userRoutes = require('./routes/user');
-
-//const userRoutes = require('./routes/user');
+const cookieParser = require('cookie-parser');
+const Payment = require('./models/payment.model')
 
 // Import custom routes and controllers
 const cartRoutes = require('./routes/cartRoutes'); // Routes for managing the cart
@@ -28,6 +37,7 @@ const userController = require('./controllers/user.controller');
 
 const app = express(); // Initialize the express app
 // Middleware for parsing URL-encoded and JSON request bodies
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -70,39 +80,187 @@ app.get('/Cart', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'layouts', 'Cart.html')); // Serve the Cart.html file
 });
 
-// Route for serving the Payment page (HTML file)
+const temp_data = {}
+
 app.get('/Payment', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html')); // Serve the Payment.html file
+  const { base, discount, delivery, total } = req.query
+  const user_id = req.cookies.id
+
+  const Cart = require('./models/cart.model');
+
+  Cart.findOne().then(cart => {
+    const items = cart.products.filter(d => d.user_id == user_id).map(d => ({
+      id: d.productId,
+      title: "title",
+      rate: 20,
+      qty: d.quantity
+    }))
+    res.render('layouts/Payment', {
+      order: {
+        id: uuidv4(),
+        orderNo: uuidv4(),
+        subTotal: base,
+        discount: discount,
+        deliveryFee: delivery,
+        total: total,
+        items
+      }
+    })
+  })
 });
+
 
 
 // Route for initiating a payment via PayPal
 app.post('/pay', async (req, res) => {
-  try {
-    const url = await paypal.createOrder(); // Create PayPal order and get the payment URL
 
-    res.redirect(url); // Redirect the user to PayPal for payment
+  const user_id = req.cookies.id
+
+  const cart = await Cart.findOne().populate('products.productId')
+  const products = cart.products.filter(d => d.user_id == user_id);
+  const items = []
+
+  products.forEach(d => {
+    items.push({
+      "name": d.productId.title,
+      "sku": d.productId._id,
+      "price": d.productId.price,
+      "currency": "USD",
+      "quantity": d.quantity
+    })
+  })
+  try {
+
+    const create_payment_json = {
+      "intent": "sale",
+      "payer": {
+        "payment_method": "paypal"
+      },
+      "redirect_urls": {
+        "return_url": "http://localhost:3000/success",
+        "cancel_url": "http://localhost:3000/cancel"
+      },
+      "transactions": [{
+        "item_list": {
+          "items": items
+        },
+        "amount": {
+          "currency": "USD",
+          "total": req.body.subtotal
+        },
+        "description": "Order " + req.body.orderNo
+      }]
+    };
+
+    paypal.payment.create(
+      JSON.stringify(create_payment_json),
+      function (error, payment) {
+        if (error) {
+          throw error;
+        } else {
+          for (let i = 0; i < payment.links.length; i++) {
+            if (payment.links[i].rel === 'approval_url') {
+              const parsedUrl =url.parse(payment.links[i].href, true);
+              temp_data[parsedUrl.query.token] = req.body.total
+              res.redirect(payment.links[i].href);
+            }
+          }
+        }
+      });
   } catch (error) {
     res.send('Error: ' + error); // Handle errors
   }
 });
+
+app.get('/success', async (req, res) => {
+  const payerId = req.query.PayerID;
+  const paymentId = req.query.paymentId;
+  const token = req.query.token
+
+  const user_id = req.cookies.id
+
+  const cart = await Cart.findOne().populate('products.productId')
+  const products = cart.products.filter(d => d.user_id == user_id);
+  let total =0;
+
+  products.forEach(d => {
+    total += (d.quantity * d.productId.price)
+  })
+
+  const execute_payment_json = {
+    "payer_id": payerId,
+    "transactions": [{
+      "amount": {
+        "currency": "USD",
+        "total": temp_data[token]
+      }
+    }]
+  };
+
+  paypal.payment.execute(paymentId,
+    execute_payment_json,
+    function (error, payment) {
+      if (error) {
+        console.log(error.response);
+        throw error;
+      } else {
+        res.render('layouts/OrderComplete')
+      }
+    });
+});
+
+app.get('/cancel', (req, res) => res.redirect('/'));
 
 // Route for completing the PayPal payment
-app.get('/complete-order', async (req, res) => {
-  try {
-    await paypal.capturePayment(req.query.token); // Capture the payment using the PayPal token
+// app.get('/complete-order', async (req, res) => {
+//   try {
+//     await paypal.capturePayment(req.query.token)
 
-    res.send('Your goods are purchased successfully'); // Display success message
-  } catch (error) {
-    res.send('Error: ' + error); // Handle errors
-  }
-});
+//     const updatedPayment = await Payment.updateOne(
+//       { orderNo: req.query.orderNo },
+//       {
+//         $set: {
+//           isPaid: true
+//         }
+//       },
+//       { new: true }
+//     )
+//     res.render('layouts/OrderComplete')
+//   } catch (error) {
+//     res.send('Error: ' + error)
+//   }
+// })
 
 // Route for handling canceled PayPal orders
-app.get('/cancel-order', (req, res) => {
-  res.redirect('/'); // Redirect to the homepage when an order is canceled
-});
+// app.get('/cancel-order', (req, res) => {
+//   res.redirect('/'); // Redirect to the homepage when an order is canceled
+// });
 
+app.post('/pay/card', async (req, res) => {
+  try {
+    const payment = await Payment({
+      ...req.body,
+      gateway: "card",
+      isPaid: true
+    }).save()
+
+    //TODO: get order from DB
+    res.json({
+      success: true,
+      redirectURL: '/order/completed',
+    })
+  } catch (error) {
+    res.send('Error: ' + error)
+  }
+})
+
+app.get('/order/completed', async (req, res) => {
+  try {
+    res.render('layouts/OrderComplete')
+  } catch (error) {
+    res.send('Error: ' + error)
+  }
+})
 // app.use('/new', productoutes)
 
 //configure view engine
@@ -145,10 +303,10 @@ connectDb()
   .catch(err => console.log('error in connecting db\n:', err))// Handle database connection errors
 
 
-  // MongoDB connection
+// MongoDB connection
 mongoose.connect('mongodb+srv://s220194805:nC0IFkpgBCS1fp0q@cluster0.k3wz2.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected successfully'))
-.catch((err) => console.log('MongoDB connection error:', err));
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch((err) => console.log('MongoDB connection error:', err));

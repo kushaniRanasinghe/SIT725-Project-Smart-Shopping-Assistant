@@ -8,7 +8,8 @@ const cartSchema = new mongoose.Schema({
             // productId stores the reference to the product document from the 'Product' collection
             productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
             // quantity represents how many of the product have been added to the cart, defaults to 1
-            quantity: { type: Number, default: 1 }
+            quantity: { type: Number, default: 1 },
+            user_id: { type: String }
         }
     ]
 });

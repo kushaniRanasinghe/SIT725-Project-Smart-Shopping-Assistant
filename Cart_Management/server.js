@@ -19,6 +19,11 @@ app.get('/signup', (req, res) => {
     res.sendFile(path.join(__dirname, 'signup.html'));
 });
 
+// Serve the signup page
+app.get('/userinfo', (req, res) => {
+    res.sendFile(path.join(__dirname, 'updateuser.html'));
+});
+
 // Serve the login page
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname,  'login.html'));

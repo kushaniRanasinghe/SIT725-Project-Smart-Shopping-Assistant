@@ -32,6 +32,6 @@ module.exports = mongoose.model('User', {
   email: String,
   firstname: String,
   lastname:String,
-  password:String
-
+  password:String,
+  user_type:String
 })
