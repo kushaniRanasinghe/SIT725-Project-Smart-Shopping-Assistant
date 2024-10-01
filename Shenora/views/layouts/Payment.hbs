@@ -72,21 +72,21 @@
           <h5 class="mb-4">Credit Card Information</h5>
           <div class="mb-3">
             <label for="cardNumber" class="form-label">Card Number</label>
-            <input type="number"  class="form-control" id="cardNumber"
+            <input type="number"  class="form-control" id="cardNumber" name="cardNumber"
               placeholder="Card number" />
           </div>
           <div class="row">
             <div class="col-md-6">
               <label for="name" class="form-label">Name</label>
-              <input type="text"  class="form-control" id="name" placeholder="Card holder name" />
+              <input type="text"  class="form-control" id="name" name="holdername" placeholder="Card holder name" />
             </div>
             <div class="col-md-3">
               <label for="expDate" class="form-label">EXP. Date</label>
-              <input type="text"  class="form-control" id="expDate" maxlength="5" placeholder="MM/YY" />
+              <input type="text" name="exp" class="form-control" id="expDate" maxlength="5" placeholder="MM/YY" />
             </div>
             <div class="col-md-3">
               <label for="cvv" class="form-label">CVV</label>
-              <input type="number"  class="form-control" maxlength="3" id="cvv" placeholder="CVV" />
+              <input type="number" name="cvv" class="form-control" maxlength="3" id="cvv" placeholder="CVV" />
             </div>
             <input name="subtotal" hidden value="{{order.subTotal}}"/>
             <input name="discount" hidden value="{{order.discount}}"/>

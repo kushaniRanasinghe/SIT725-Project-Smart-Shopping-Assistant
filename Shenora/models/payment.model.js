@@ -51,6 +51,13 @@ const paymentSchema = Schema({
   cvv: {
     type: String
   },
+  userid: {
+    type: String
+  },
+  items:{
+    type: Array,
+    default: []
+  }
 })
 
 module.exports = mongoose.model("Payment", paymentSchema);

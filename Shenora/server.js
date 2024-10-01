@@ -34,6 +34,7 @@ const productoutes = require('./controllers/product.controller')
 
 // Import the user controller
 const userController = require('./controllers/user.controller');
+const paymentModel = require('./models/payment.model');
 
 const app = express(); // Initialize the express app
 // Middleware for parsing URL-encoded and JSON request bodies
@@ -119,7 +120,12 @@ app.post('/pay', async (req, res) => {
   const cart = await Cart.findOne().populate('products.productId')
   const products = cart.products.filter(d => d.user_id == user_id);
   const items = []
-
+  const re = {
+      user_id,
+      products: [],
+      total: req.body.total,
+      orderid: req.body.orderNo
+  }
   products.forEach(d => {
     items.push({
       "name": d.productId.title,
@@ -128,7 +134,38 @@ app.post('/pay', async (req, res) => {
       "currency": "USD",
       "quantity": d.quantity
     })
+    re.products.push((
+      {
+        productId: d.productId._id,
+        qty: d.quantity
+      }
+    ))
+
   })
+
+  payment_data = new Payment({
+    orderNo: req.body.orderNo,
+    subTotal: req.body.subtotal,
+    discount: req.body.discount,
+    deliveryFee: req.body.delivery,
+    total: req.body.total,
+    gateway: "paypal",
+    isPaid: false,
+    email: req.body.email,
+    aprtmentNumber: req.body.apartmentNum,
+    street: req.body.street,
+    suburb: req.body.suburb,
+    postalCode: req.body.postalCode,
+    cardNumber: req.body.cardNumber,
+    cardHolderName: req.body.holdername,
+    expire: req.body.exp,
+    cvv: req.body.cvv,
+    items: re.products,
+    userid: user_id
+  })
+  const {_id} = await payment_data.save()
+  re['id'] =  _id
+
   try {
 
     const create_payment_json = {
@@ -161,7 +198,7 @@ app.post('/pay', async (req, res) => {
           for (let i = 0; i < payment.links.length; i++) {
             if (payment.links[i].rel === 'approval_url') {
               const parsedUrl =url.parse(payment.links[i].href, true);
-              temp_data[parsedUrl.query.token] = req.body.total
+              temp_data[parsedUrl.query.token] = re
               res.redirect(payment.links[i].href);
             }
           }
@@ -173,26 +210,33 @@ app.post('/pay', async (req, res) => {
 });
 
 app.get('/success', async (req, res) => {
+
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
   const token = req.query.token
 
   const user_id = req.cookies.id
+  const payment_details = temp_data[token]
 
-  const cart = await Cart.findOne().populate('products.productId')
-  const products = cart.products.filter(d => d.user_id == user_id);
-  let total =0;
-
-  products.forEach(d => {
-    total += (d.quantity * d.productId.price)
-  })
+  if(!payment_details){
+    return
+  }
+  const last_payment = await Payment.findById(payment_details.id)
+  if(last_payment){
+    last_payment['isPaid'] = true
+    last_payment.save()
+  }
+  console.log(last_payment, payment_details)
+  const cart = await Cart.findOne();
+  cart.products = cart.products.filter(p => p.user_id!=user_id);
+  await cart.save();
 
   const execute_payment_json = {
     "payer_id": payerId,
     "transactions": [{
       "amount": {
         "currency": "USD",
-        "total": temp_data[token]
+        "total": `${last_payment.subTotal}`
       }
     }]
   };

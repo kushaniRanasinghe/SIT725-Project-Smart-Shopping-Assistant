@@ -12,7 +12,6 @@ exports.addToCart = async (req, res) => {
             // If the product is not found, return a 404 error
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
-
         // Find the existing cart 
         let cart = await Cart.findOne();
         if (!cart) {
