@@ -1,0 +1,181 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Hello World Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+</head>
+
+<body>
+  <div class="p-3 mb-2 bg-danger">
+    <h1 class="d-flex justify-content-center">Payment</h1>
+  </div>
+  <div class="container mt-5">
+    <form action="/pay" method="post" target="_blank">
+      <div class="row">
+        <div class="col-md-6">
+          <h2>Checkout</h2>
+          <!-- <div class="mb-4 mt-4 ">
+                    <h5>Payment Method</h5>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                        <label class="form-check-label" for="creditCard">
+                            <img src="./images/Visa.svg" alt="Visa"> Credit Card
+                        
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
+                        <label class="form-check-label" for="paypal">
+                            <img src="./images/paypal.svg"  alt="Visa"> Paypal
+                        </label>
+                    </div>
+                </div> -->
+
+          <h5>Billing Details</h5>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" name="email" value="test@test.com" class="form-control" id="email"
+              placeholder="Enter email" />
+          </div>
+          <div class="mb-3">
+            <label for="apartmentNum" class="form-label">Apartment Number</label>
+            <input type="text" name="apartmentNum" value="123" class="form-control" id="apartmentNum"
+              placeholder="Enter your Apartment Number" />
+          </div>
+          <div class="mb-3">
+            <label for="street" class="form-label">Street</label>
+            <input type="text" name="street" value="test Street" class="form-control" id="street"
+              placeholder="Enter your Street" />
+          </div>
+          <div class="mb-3">
+            <label for="suburb" class="form-label">Suburb</label>
+            <input type="text" name="suburb" value="colombo" class="form-control" id="suburb"
+              placeholder="Enter your Suburb" />
+          </div>
+
+          <div class="mb-4">
+            <label for="postalCode" class="form-label">Billing Zip / Postal
+              Code</label>
+            <input type="number" name="postalCode" value="11500" class="form-control" id="postalCode"
+              placeholder="Enter Zip/Postal code" />
+          </div>
+
+          <input type="hidden" name="orderNo" value="{{order.orderNo}}" />
+          <input type="hidden" name="total" value="{{order.total}}" />
+
+
+          <h5 class="mb-4">Credit Card Information</h5>
+          <div class="mb-3">
+            <label for="cardNumber" class="form-label">Card Number</label>
+            <input type="number" value="41111111111111111" class="form-control" id="cardNumber"
+              placeholder="Card number" />
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" value="card hoolder" class="form-control" id="name" placeholder="Card holder name" />
+            </div>
+            <div class="col-md-3">
+              <label for="expDate" class="form-label">EXP. Date</label>
+              <input type="text" value="10/29" class="form-control" id="expDate" maxlength="5" placeholder="MM/YY" />
+            </div>
+            <div class="col-md-3">
+              <label for="cvv" class="form-label">CVV</label>
+              <input type="number" value="123" class="form-control" maxlength="3" id="cvv" placeholder="CVV" />
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="col-md-6">
+          <div class="card p-3">
+            <h4 class="card-title">Order Summary</h4>
+            <!-- <p>Bla bla bla</p> -->
+            <div class="d-flex justify-content-between mb-3">
+              <!-- <span>A simple start for everyone</span> -->
+              <!-- <span>$59.99/month</span> -->
+            </div>
+            <!-- <button class="btn btn-outline-primary mb-3">Change Plan</button> -->
+
+            <!-- Pricing -->
+            <div class="d-flex justify-content-between">
+              <span>Subtotal</span>
+              <span>${{order.subTotal}}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Discount</span>
+              <span>${{order.discount}}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Delivery Fees</span>
+              <span>${{order.deliveryFee}}</span>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between">
+              <strong>Total</strong>
+              <strong>${{order.total}}</strong>
+            </div>
+
+            <!-- Proceed Button -->
+            <button type="button" onclick="onPayWithCard()" class="btn btn-success w-100 mt-3">Proceed With Credit Card
+              Payment</button>
+            <p class="mt-2 text-muted">
+              By continuing, you accept our Terms of Services and Privacy
+              Policy. Please note that payments are non-refundable.
+            </p>
+            <input type="image" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
+              border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
+            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</body>
+<script>
+  function onPayWithCard() {
+    const orderNo = "{{order.orderNo}}"
+    const subTotal = "{{order.subTotal}}"
+    const discount = "{{order.discount}}"
+    const deliveryFee = "{{order.deliveryFee}}"
+    const total = "{{order.total}}"
+    const paymentData = {
+      email: $('#email').val(),
+      aprtmentNumber: $('#apartmentNum').val(),
+      street: $('#street').val(),
+      suburb: $('#suburb').val(),
+      postalCode: $('#postalCode').val(),
+      cardNumber: $('#cardNumber').val(),
+      cardHolderName: $('#name').val(),
+      expire: $('#expDate').val(),
+      cvv: $('#cvv').val(),
+      orderNo,
+      subTotal,
+      discount,
+      deliveryFee,
+      total,
+    }
+
+    $.ajax({
+      url: "/pay/card",
+      type: "POST",
+      data: paymentData,
+      success: function (response) {
+
+        window.location.href = response.redirectURL
+      },
+      error: function (error) {
+        console.log("ERROR")
+      },
+    });
+  }
+</script>
+
+</html>

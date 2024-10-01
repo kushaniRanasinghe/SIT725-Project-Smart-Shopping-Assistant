@@ -11,6 +11,8 @@ const { engine } = require('express-handlebars'); // Handlebars view engine for 
 const bodyParser = require('body-parser'); // Middleware for parsing incoming request bodies
 const PORT = 3000;
 
+const Payment = require('./models/payment.model')
+
 //const userRoutes = require('./routes/user');
 
 //const userRoutes = require('./routes/user');
@@ -71,9 +73,34 @@ app.get('/Cart', (req, res) => {
 });
 
 // Route for serving the Payment page (HTML file)
+// app.get('/Payment', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html')); // Serve the Payment.html file
+// });
+
 app.get('/Payment', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html')); // Serve the Payment.html file
+  const { orderNo } = req.query
+
+  // const order = await Order.findOne({orderNo: orderNo}).lean()
+  const order = {
+    id: 1,
+    orderNo: orderNo,
+    subTotal: 100,
+    discount: 10,
+    deliveryFee: 50,
+    total: 140.00,
+    items: [
+      {
+        id: "1",
+        title: "Cute Graphic T-Shirt",
+        rate: 20,
+        qty: 5
+      }
+    ]
+  }
+  res.render('layouts/Payment', { order })
+  // res.sendFile(path.join(__dirname, 'views/layouts', 'Payment.html'));
 });
+
 
 
 // Route for initiating a payment via PayPal
@@ -90,19 +117,53 @@ app.post('/pay', async (req, res) => {
 // Route for completing the PayPal payment
 app.get('/complete-order', async (req, res) => {
   try {
-    await paypal.capturePayment(req.query.token); // Capture the payment using the PayPal token
+    await paypal.capturePayment(req.query.token)
 
-    res.send('Your goods are purchased successfully'); // Display success message
+    const updatedPayment = await Payment.updateOne(
+      { orderNo: req.query.orderNo },
+      {
+        $set: {
+          isPaid: true
+        }
+      },
+      { new: true }
+    )
+    res.render('layouts/OrderComplete')
   } catch (error) {
-    res.send('Error: ' + error); // Handle errors
+    res.send('Error: ' + error)
   }
-});
+})
 
 // Route for handling canceled PayPal orders
 app.get('/cancel-order', (req, res) => {
   res.redirect('/'); // Redirect to the homepage when an order is canceled
 });
 
+app.post('/pay/card', async (req, res) => {
+  try {
+    const payment = await Payment({
+      ...req.body,
+      gateway: "card",
+      isPaid: true
+    }).save()
+
+    //TODO: get order from DB
+    res.json({
+      success: true,
+      redirectURL: '/order/completed',
+    })
+  } catch (error) {
+    res.send('Error: ' + error)
+  }
+})
+
+app.get('/order/completed', async (req, res) => {
+  try {
+    res.render('layouts/OrderComplete')
+  } catch (error) {
+    res.send('Error: ' + error)
+  }
+})
 // app.use('/new', productoutes)
 
 //configure view engine
