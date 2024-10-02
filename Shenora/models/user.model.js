@@ -25,6 +25,8 @@
 // Export the User model
 //module.exports = mongoose.model('user', userSchema);
 
+//this model is used to store the details of the model
+
 const mongoose = require('mongoose')
 
 

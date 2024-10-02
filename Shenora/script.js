@@ -1,22 +1,22 @@
 
 // Add product to cart
 function addToCart(productId) {
-  // Sending a POST request to the '/cart/add' endpoint to add the selected product to the cart
+  // Sending a POST request
   fetch('/cart/add', {
-    method: 'POST', // HTTP method POST for adding data
+    method: 'POST', 
     headers: {
-      'Content-Type': 'application/json' // Specifying that the request body will be in JSON format
+      'Content-Type': 'application/json' 
     },
-    body: JSON.stringify({ productId: productId }) // Passing the productId in the request body
+    body: JSON.stringify({ productId: productId })
   })
-    .then(response => response.json()) // Parse the response as JSON
+    .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // If the request was successful, show an alert
+        
         alert("Product added to cart successfully!");
-        window.location.href = '/Cart'; // Redirect to the Cart page after adding the product
+        window.location.href = '/Cart'; 
       } else {
-        alert("Failed to add product to cart."); // Show an error message if adding fails
+        alert("Failed to add product to cart."); 
       }
     })
     .catch(error => {
@@ -26,18 +26,18 @@ function addToCart(productId) {
 
 // Remove product from cart
 function removeFromCart(productId) {
-  // Sending a DELETE request to the server to remove the product from the cart
+  // Sending a DELETE request
   fetch(`/cart/remove/${productId}`, { method: 'DELETE' })
-    .then(response => response.json()) // Parse the response as JSON
+    .then(response => response.json()) 
     .then(data => {
       if (data.success) {
-        // Filter the cart array locally to remove the product with the matching productId
+        
         cart = cart.filter(item => item.productId._id !== productId);
 
-        // Remove the product's HTML element from the DOM
+        
         document.getElementById(`cart-item-${productId}`).remove();
 
-        // If the cart is empty after removing the product, show an empty cart message
+        
         if (cart.length === 0) {
           document.getElementById('cartItems').innerHTML = `
                   <div class="empty-cart">
@@ -47,10 +47,10 @@ function removeFromCart(productId) {
               `;
         }
 
-        // Update the cart summary after the product has been removed
+        
         updateCartSummary();
       } else {
-        alert("Failed to remove product from cart."); // Show an error message if removal fails
+        alert("Failed to remove product from cart."); 
       }
     })
     .catch(error => {
@@ -63,9 +63,9 @@ function increaseQuantity(productId) {
   const product = cart.find(item => item.productId._id === productId);
   if (product) {
     fetch(`/cart/increase/${productId}`, { method: 'POST' }).then(e => {
-      product.quantity++; // Increment the quantity of the product
-      document.getElementById(`quantity-${productId}`).textContent = product.quantity; // Update the displayed quantity
-      updateCartSummary(); // Update the cart summary to reflect the new quantity
+      product.quantity++; 
+      document.getElementById(`quantity-${productId}`).textContent = product.quantity; 
+      updateCartSummary(); 
     })
   }
 }
@@ -76,26 +76,26 @@ function decreaseQuantity(productId) {
   if (product && product.quantity > 1) {
     fetch(`/cart/decrease/${productId}`, { method: 'POST' })
       .then(e => {
-        product.quantity--; // Decrease the quantity of the product
-        document.getElementById(`quantity-${productId}`).textContent = product.quantity; // Update the displayed quantity
-        updateCartSummary(); // Update the cart summary to reflect the new quantity
+        product.quantity--; 
+        document.getElementById(`quantity-${productId}`).textContent = product.quantity; 
+        updateCartSummary(); 
       })
   }
 }
 
 // Calculate the total price of all items in the cart
 function calculateTotal() {
-  // Sum the price of each product multiplied by its quantity
+  
   return cart.reduce((total, item) => total + item.productId.price * item.quantity, 0).toFixed(2);
 }
 
-// Calculate discount and delivery fee based on the total price
+
 function calculateDiscountAndDelivery(baseTotal) {
   let discount = 0;
   let discountPercentage = 0;
   let deliveryFee = 0;
 
-  // Apply discount based on the total price
+  
   if (baseTotal >= 50 && baseTotal < 100) {
     discountPercentage = 15;
     discount = baseTotal * 0.15;
@@ -107,7 +107,7 @@ function calculateDiscountAndDelivery(baseTotal) {
     discount = baseTotal * 0.30;
   }
 
-  // Apply a delivery fee if the total is below $50
+  
   if (baseTotal < 50) {
     deliveryFee = baseTotal * 0.10;
   }
@@ -115,11 +115,11 @@ function calculateDiscountAndDelivery(baseTotal) {
   return { discount, discountPercentage, deliveryFee };
 }
 
-// Update the cart summary (subtotal, discount, delivery fee, and total)
+// Update the cart summary 
 function updateCartSummary() {
-  const baseTotal = calculateTotal(); // Calculate the total price
-  const { discount, discountPercentage, deliveryFee } = calculateDiscountAndDelivery(baseTotal); // Calculate discount and fees
-  const finalTotal = (baseTotal - discount + deliveryFee).toFixed(2); // Calculate final total
+  const baseTotal = calculateTotal(); 
+  const { discount, discountPercentage, deliveryFee } = calculateDiscountAndDelivery(baseTotal); 
+  const finalTotal = (baseTotal - discount + deliveryFee).toFixed(2); 
 
   // Update the DOM elements with the calculated totals
   document.getElementById('baseTotal').textContent = `$${baseTotal}`;
@@ -135,13 +135,13 @@ function updateCartDisplay() {
 
   // Fetch the cart data from the server
   fetch('/cart/view')
-    .then(response => response.json()) // Parse the response as JSON
+    .then(response => response.json()) 
     .then(data => {
-      cart = data.products; // Store the cart data in the local cart array
-      cartItemsDiv.innerHTML = ''; // Clear the current cart display
+      cart = data.products; 
+      cartItemsDiv.innerHTML = ''; 
 
       if (cart.length === 0) {
-        // If the cart is empty, display a message and a button to shop now
+        
         cartItemsDiv.innerHTML = `
               <div class="empty-cart">
                   <p>Your cart is empty. Add some products!</p>
@@ -166,7 +166,7 @@ function updateCartDisplay() {
               `;
         });
 
-        updateCartSummary(); // Update the cart summary after displaying the items
+        updateCartSummary(); 
       }
     })
     .catch(error => {
@@ -177,20 +177,20 @@ function updateCartDisplay() {
 // Handle the checkout process
 function checkout() {
   if (cart.length === 0) {
-    alert("Your cart is empty."); // Alert if the cart is empty
+    alert("Your cart is empty."); 
   } else {
-    const baseTotal = calculateTotal(); // Calculate total price
-    const { discount, deliveryFee } = calculateDiscountAndDelivery(baseTotal); // Calculate discount and fees
-    const finalTotal = (baseTotal - discount + deliveryFee).toFixed(2); // Calculate final total
+    const baseTotal = calculateTotal(); 
+    const { discount, deliveryFee } = calculateDiscountAndDelivery(baseTotal); 
+    const finalTotal = (baseTotal - discount + deliveryFee).toFixed(2); 
 
-    alert(`Final Total Amount: $${finalTotal}. Proceeding to payment...`); // Show the final total and proceed to payment
-    window.location.href = `Payment?base=${baseTotal}&discount=${discount}&delivery=${deliveryFee}&total=${finalTotal}`; // Redirect to the payment page
+    alert(`Final Total Amount: $${finalTotal}. Proceeding to payment...`); 
+    window.location.href = `Payment?base=${baseTotal}&discount=${discount}&delivery=${deliveryFee}&total=${finalTotal}`; 
   }
 }
 
 // Redirect to the shop page
 function shopNow() {
-  window.location.href = '/products/shop'; // Redirect to the shop page
+  window.location.href = '/products/shop'; 
 }
 
 // Call this function to update the cart display on page load

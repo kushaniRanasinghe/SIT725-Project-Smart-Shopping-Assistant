@@ -1,16 +1,4 @@
-{{!-- 
-        {{#each products}}
-          <tr>
-            <th>Product</th>
-            <th>Type</th>
-            <th>Stocks</th>
-            <th>SKU</th>
-            <th>Price</th>
-            <th>Variants</th>
-            <th>Actions</th>
-          </tr>
-        {{/each}} --}}
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -93,7 +81,10 @@
                         <a href="shop" class="nav-item nav-link">All</a>
                         <a href="shop?type=Women" class="nav-item nav-link">Women</a>
                         <a href="shop?type=Men" class="nav-item nav-link">Men</a>
+                        <a href="shop?type=Sleep" class="nav-item nav-link">Sleep Wear</a>
+                        <a href="shop?type=Sport" class="nav-item nav-link">Sport Wear</a>
                         <a href="shop?type=Shoes" class="nav-item nav-link">Shoes</a>
+                        <a href="shop?type=Beach" class="nav-item nav-link">Beach Wear</a>
                         <a href="shop?type=Jewelery" class="nav-item nav-link">Jewelery and Accessories</a>
                         <a href="shop?type=Kids" class="nav-item nav-link">Kids</a>
                     </div>
@@ -250,25 +241,25 @@
         // Function to handle adding a product to the cart
         function addToCart(productId) {
             
-            // Use the Fetch API to send a POST request to the /cart/add endpoint
+            // Use the Fetch API 
             fetch('/cart/add', {
-                method: 'POST', // HTTP method
+                method: 'POST', 
                 headers: {
-                    'Content-Type': 'application/json' // Setting the content type to JSON
+                    'Content-Type': 'application/json' 
                 },
-                body: JSON.stringify({ productId: productId }) // Passing the productId in the request body as JSON
+                body: JSON.stringify({ productId: productId }) 
             })
-            .then(response => response.json()) // Parse the response as JSON
+            .then(response => response.json()) 
             .then(data => {
                 // Check if the request was successful
                 if (data.success) {
-                    // Alert the user that the product was added successfully
+                    
                     alert("Product added to cart successfully!");
                     
-                    // Redirect the user to the Cart page after adding the product
+                
                     window.location.href = '/Cart';
                 } else {
-                    // Alert the user if adding the product failed
+                    
                     alert("Failed to add product to cart.");
                 }
             })
