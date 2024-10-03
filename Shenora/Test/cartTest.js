@@ -1,4 +1,4 @@
-// cart.test.js
+// cartTest.js
 import * as chai from 'chai';   
 import request from 'supertest';  
 import { app } from '../server.js';  
